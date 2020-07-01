@@ -18,13 +18,20 @@ function initValues() {
 function loadLaunches() {
   // TODO: Once API is ready.
   // Load launches and sort by flight number.
+  return fetch("/launches")
+  .then((launchesResponse) => launchesResponse.json() )
+  .then((fetchedLaunches) => {
+    launches = fetchedLaunches.sort( (a, b) => {
+      return a.flightNumber > b.flightNumber;
+    });
+  });
 }
 
 function loadPlanets() {
   // TODO: Once API is ready.
   return fetch("/planets")
-  .then( (planetsresponse) => planetsresponse.json() )
-  .then( (planets) => {
+  .then((planetsresponse) => planetsresponse.json() )
+  .then((planets) => {
     const planetSelector = document.getElementById("planets-selector");
     planets.forEach((planet) => {
       planetSelector.innerHTML += `<option value="${planet.kepler_name}">${planet.kepler_name}</option>`;
