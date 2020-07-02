@@ -1,5 +1,4 @@
-import * as log from "https://deno.land/std/log/mod.ts";
-import * as _ from "https://deno.land/x/lodash@4.17.15-es/lodash.js";
+import { flatMap , log } from "../deps.ts";
 
 interface Launch {
     flightNumber: number;
@@ -32,7 +31,7 @@ export async function downloadLaunchData() {
         //log.warning("payloads");
         //log.warning(JSON.stringify(payloads));
         debugger;
-        const customers = _.flatMap(payloads, (payload: any) => {
+        const customers = flatMap(payloads, (payload: any) => {
             return payload["customers"];
         });
 
@@ -58,11 +57,27 @@ export function getAll() {
     return Array.from(launches.values());
 }
 
-export function getOne(id: number) {
+export function getOne(id : number) {
     if (launches.has(id)) {
         return launches.get(id);
     }
     return null;
+}
+
+export function addOne(data : Launch) {
+    launches.set(data.flightNumber, Object.assign(data, {
+        upcoming: true,
+        customers: ["Zero To Mastery","NASA"],
+    }));
+}
+
+export function removeOne(id : number) {
+    const aborted = launches.get(id);
+    if (aborted) {
+        aborted.upcoming = false;
+        aborted.success = false;
+    }
+    return aborted;
 }
 
 /* async function exercise() {
