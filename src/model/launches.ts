@@ -28,9 +28,7 @@ export async function downloadLaunchData() {
     const launchData = await response.json();
     for (const launch of launchData) {
         const payloads = launch["rocket"]["second_stage"]["payloads"];
-        //log.warning("payloads");
-        //log.warning(JSON.stringify(payloads));
-        debugger;
+        
         const customers = flatMap(payloads, (payload: any) => {
             return payload["customers"];
         });
@@ -79,17 +77,3 @@ export function removeOne(id : number) {
     }
     return aborted;
 }
-
-/* async function exercise() {
-    const response = await fetch("https://reqres.in/api/users", {
-        method: "POST",
-        body: JSON.stringify({name: "Elon Musk", job: "billionaire"}),
-        //headers ensure the server correctly reads our json
-        headers: {"Content-Type": "application/json; charset=UTF-8"}
-    });
-
-    const data = await response.json();
-    console.log(data);
-}
-
-await exercise(); */

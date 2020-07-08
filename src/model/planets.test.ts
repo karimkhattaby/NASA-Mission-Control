@@ -44,8 +44,6 @@ const TOO_LARGE_SMASS = {
     koi_smass: "1.04"
 };
 
-//TODO: add more test cases to check the lower bounds
-
 Deno.test("filter only habitable planets", () => {
     const filtered = filterHabitablePlanets([
         HABITABLE_PLANET,

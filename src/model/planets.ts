@@ -28,7 +28,6 @@ async function loadPlanetsData() {
 
     const planets = filterHabitablePlanets(result as Array<Planet>);
 
-    //log.info(result);
     return planets.map( (planet) => {
         return pick(planet, [
             "koi_prad",
