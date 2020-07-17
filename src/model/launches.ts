@@ -13,33 +13,47 @@ interface Launch {
 
 const launches = new Map<number, Launch>();
 
+async function fetchData(URL: string) {
+    return fetch(URL)
+    .then(response => {
+        if(!response.ok) {
+            log.warning("Problem downloading launch data.");
+            throw new Error("Launch data download failed.");
+        }
+        return response.json();
+    })
+    .catch(err => {throw new Error(err.message)})
+}
+
 export async function downloadLaunchData() {
     log.info("Downloading launch data.");
 
-    const response = await fetch("https://api.spacexdata.com/v3/launches", {
-        method: "GET"
-    });
+    const launchData = await fetchData("https://api.spacexdata.com/v4/launches");
+    const payloadsData = await fetchData("https://api.spacexdata.com/v4/payloads");
+    const rocketsData = await fetchData("https://api.spacexdata.com/v4/rockets");
 
-    if (!response.ok) {
-        log.warning("Problem downloading launch data.");
-        throw new Error("Launch data download failed.");
-    }
-
-    const launchData = await response.json();
     for (const launch of launchData) {
-        const payloads = launch["rocket"]["second_stage"]["payloads"];
+        //launch["payloads"] =>  Array of payloads IDs
+        //const payloads = launch["rocket"]["second_stage"]["payloads"];
+        const payloads = launch["payloads"];
         
-        const customers = flatMap(payloads, (payload: any) => {
-            return payload["customers"];
+        //query to each payload ID and get customers
+        const customers = flatMap(payloads, (payloadID: string) => {
+            return payloadsData.filter((element: any) => element["id"]==payloadID)[0]["customers"];
         });
+        
+        const rocket = rocketsData.filter((element: any) => element["id"]==launch["rocket"])[0]["name"];
+        /* console.log(customers);
+        console.log(rocket);
+        console.log("STOP HERE"); */
 
         const flightData = {
             flightNumber: launch["flight_number"],
-            mission: launch["mission_name"],
-            rocket: launch["rocket"]["rocket_name"],
-            launchDate: launch["launch_date_unix"],
+            mission: launch["name"],
+            rocket: rocket,
+            launchDate: launch["date_unix"],
             upcoming: launch["upcoming"],
-            success: launch["launch_success"],
+            success: launch["success"],
             customers: customers,
         };
 
